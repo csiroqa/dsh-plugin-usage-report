@@ -89,3 +89,8 @@ plugins/usage-report/
 │       └── UsageSettingsTab.tsx  # 页签 UI（轮询渲染）
 scripts/build-plugin.mjs   # 两半区 esbuild 构建脚本（--only 指定插件）
 ```
+
+## 许可
+
+MIT © csiroqa
+

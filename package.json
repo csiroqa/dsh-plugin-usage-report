@@ -4,6 +4,23 @@
   "version": "0.1.0",
   "type": "module",
   "description": "DeepSeek Harness 独立插件：用量报表（@dsh-plugin/usage-report）",
+  "license": "MIT",
+  "author": "csiroqa",
+  "homepage": "https://github.com/csiroqa/dsh-plugin-usage-report#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/csiroqa/dsh-plugin-usage-report.git"
+  },
+  "bugs": {
+    "url": "https://github.com/csiroqa/dsh-plugin-usage-report/issues"
+  },
+  "keywords": [
+    "dsh",
+    "deepseek-harness",
+    "plugin",
+    "usage-report",
+    "budget"
+  ],
   "packageManager": "pnpm@11.7.0",
   "scripts": {
     "build": "pnpm --filter @dsh-plugin/usage-report run build",
