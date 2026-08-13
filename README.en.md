@@ -1,15 +1,15 @@
 # dsh-plugin-usage-report
 
-A **usage & cost report** plugin for DeepSeek Harness (DSH): aggregates tokens (input / cache-read / cache-write / output), turns and estimated cost (USD) by local day and month, with monthly reports, budget alerts, and a Claude Code/Codex-style daily contribution grid with fun stats.
+A **usage & cost report** plugin for DeepSeek Harness (DSH): aggregates tokens (input / cache-read / cache-write / output), turns, steps and estimated cost (USD) by local day and month, with monthly reports, budget alerts, and a Claude Code/Codex-style daily contribution grid with fun stats.
 
 中文: [README.md](README.md)
 
 ## Features
 
-- **Usage ledger**: refolds only revision-changed session logs against sessionPersistence, accumulating tokens / turns / steps / cost (USD) per day, broken down by model (`provider:model` key); persisted via storage-domain, no full rescan after restart
+- **Usage ledger**: refolds only revision-changed session logs against sessionPersistence, accumulating tokens / turns / steps / estimated cost (USD) per day, broken down by model (`provider:model` key); persisted via storage-domain, no full rescan after restart
 - **Budget alerts**: monthly budget (`monthlyBudgetUsd`) triggers alerts at threshold percentages (default 50/80/90/100%), deduplicated by `month|threshold`, reset automatically across months
 - **`/usage` command**: `/usage` (today/month/budget progress/contribution grid/fun stats), `/usage month [YYYY-MM]` (monthly detail), `/usage budget <usd>` (0 disables), `/usage export [dir]` (Markdown report), `/usage rescan` (full rescan)
-- **"Usage" tab under Settings > Plugins**: Claude Code/Codex-style contribution grid (last 13 weeks), editable budget progress bar, fun stats cards and alert list (zh/en, auto-refreshes every 15 s)
+- **"Usage" tab under Settings > Plugins**: Claude Code/Codex-style daily contribution grid (last 13 weeks), editable budget progress bar, fun stats cards and alert list (zh/en, auto-refreshes every 15 seconds)
 
 ## Configuration
 
@@ -21,7 +21,7 @@ Optional config on the plugin row (`cordis.patch.yml`):
 | `alertThresholds` | `[50, 80, 90, 100]` | Alert thresholds as percent of budget (0-100, sorted, deduplicated) |
 | `reconcileMinutes` | `10` | Session log reconcile interval in minutes; 0 = no auto reconcile |
 | `keepDays` | `400` | Days of daily ledger to retain |
-| `gridDays` | `91` | Days covered by the contribution grid (91 = 13 weeks) |
+| `gridDays` | `91` | Days covered by the daily contribution grid (91 = 13 weeks) |
 | `pricing` | `{}` | Per-model price overrides (USD/M tokens), keyed by `provider:model` or `model` |
 | `exportDir` | `''` | Output directory for `/usage export`; empty = `<workspace>/.dsh-reports` |
 
@@ -46,9 +46,9 @@ Restart `dsh web` and hard-refresh the browser (**Ctrl+F5**).
 
 ## Usage
 
-1. Run `/usage` in a session to see today / this month / budget progress / contribution grid / fun stats; `/usage month [YYYY-MM]` for monthly detail
+1. Run `/usage` in a session to see today / this month / budget progress / daily contribution grid / fun stats; `/usage month [YYYY-MM]` for monthly detail
 2. `/usage budget <usd>` sets the monthly budget; `/usage export [dir]` exports this month's report; `/usage rescan` does a full rescan
-3. Settings > Plugins > **Usage**: contribution grid, editable budget progress and alert list
+3. Settings > Plugins > **Usage**: daily contribution grid, editable budget progress and alert list
 
 ## Compatibility
 

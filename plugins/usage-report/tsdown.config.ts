@@ -44,7 +44,7 @@ const libConfig: UserConfig = {
   outDir: 'lib',
   format: ['esm'],
   platform: 'node',
-  target: 'es2024',
+  target: 'es2022',
   // 保持入口文件名：src/index.ts → lib/index.js（package.json main 指向它）。
   fixedExtension: false,
   dts: true,
@@ -61,7 +61,7 @@ const clientConfig: UserConfig = {
   outDir: 'lib',
   format: 'cjs',
   platform: 'browser',
-  target: 'es2024',
+  target: 'es2022',
   dts: true,
   sourcemap: true,
   clean: false,

@@ -1,15 +1,15 @@
 # dsh-plugin-usage-report
 
-DeepSeek Harness（DSH）的**用量报表**插件：按本地自然日/月汇聚 token（输入 / 缓存读 / 缓存写 / 输出）、轮数与费用（USD），提供月度报表、预算告警，以及 Claude Code / Codex 式每日贡献格子与趣味统计。
+DeepSeek Harness（DSH）的**用量报表**插件：按本地自然日/月汇聚 token（输入 / 缓存读 / 缓存写 / 输出）、轮数、步数与估算费用（USD），提供月度报表、预算告警，以及 Claude Code / Codex 式每日贡献格子与趣味统计。
 
 English: [README.en.md](README.en.md)
 
 ## 功能
 
-- **用量账本**：对照 sessionPersistence 的 revision 增量重折叠变更会话日志，按日累计 token / 轮 / 步 / 费用（USD），按模型分账（`provider:model` 键）；数据持久化于 storage-domain，重启无需全量重扫
+- **用量账本**：对照 sessionPersistence 的 revision 增量重折叠变更会话日志，按日累计 token / 轮 / 步 / 估算费用（USD），按模型分账（`provider:model` 键）；数据持久化于 storage-domain，重启无需全量重扫
 - **预算告警**：月度预算（`monthlyBudgetUsd`）按阈值（默认 50/80/90/100%）触发告警，按「月份|阈值」去重、跨月自动重置
 - **命令 `/usage`**：`/usage`（今日/本月/预算进度/每日格子/趣味统计）、`/usage month [YYYY-MM]`（月度明细）、`/usage budget <usd>`（0 关闭）、`/usage export [dir]`（导出 Markdown 报表）、`/usage rescan`（全量重扫）
-- **设置页「用量」页签**：Claude Code / Codex 式每日格子（近 13 周）、预算进度条（可编辑）、趣味统计卡与告警列表（中英双语，每 15 秒自动刷新）
+- **设置页「用量」页签**：Claude Code / Codex 式每日贡献格子（近 13 周）、预算进度条（可编辑）、趣味统计卡与告警列表（中英双语，每 15 秒自动刷新）
 
 ## 配置
 
@@ -21,7 +21,7 @@ English: [README.en.md](README.en.md)
 | `alertThresholds` | `[50, 80, 90, 100]` | 触发告警的消耗百分比阈值（0-100，升序去重） |
 | `reconcileMinutes` | `10` | 会话日志对账间隔（分钟）；0 = 关闭自动对账 |
 | `keepDays` | `400` | 每日账本保留天数 |
-| `gridDays` | `91` | 每日格子图覆盖天数（91 = 13 周） |
+| `gridDays` | `91` | 每日贡献格子覆盖天数（91 = 13 周） |
 | `pricing` | `{}` | 模型单价覆盖（USD/百万 token），键为 `provider:model` 或 `model` |
 | `exportDir` | `''` | `/usage export` 输出目录；空 = 当前工作区 `.dsh-reports` |
 
@@ -46,9 +46,9 @@ dsh plugin --profile web add link:E:\path\to\dsh-plugin-usage-report\plugins\usa
 
 ## 使用
 
-1. 会话里输入 `/usage` 查看今日/本月/预算进度/每日格子/趣味统计；`/usage month [YYYY-MM]` 查看月度明细
+1. 会话里输入 `/usage` 查看今日/本月/预算进度/每日贡献格子/趣味统计；`/usage month [YYYY-MM]` 查看月度明细
 2. `/usage budget <usd>` 设置月度预算；`/usage export [dir]` 导出当月报表；`/usage rescan` 全量重扫
-3. 设置 > 插件 > **用量**：每日格子、预算进度（可编辑）与告警列表
+3. 设置 > 插件 > **用量**：每日贡献格子、预算进度（可编辑）与告警列表
 
 ## 兼容性
 
