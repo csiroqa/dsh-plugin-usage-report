@@ -1,0 +1,24 @@
+# 用量/成本报表插件（@dsh-plugin/usage-report）
+# host 半区：/usage 命令组 + 会话日志用量折叠入账（持久化 domain）+ 预算告警；
+# browser 半区（dsh.client 声明在 package.json）提供"设置 > 插件 > 用量"页签：
+# Claude Code / Codex 式每日格子（近 13 周贡献图）、月度统计与预算进度。
+
+- insert:
+    - id: usage-report
+      name: '@dsh-plugin/usage-report'
+      config:
+        # 月度预算（USD）；0 = 不启用预算告警
+        monthlyBudgetUsd: 0
+        # 触发告警的消耗百分比阈值（0-100），逐级上浮
+        alertThresholds: [50, 80, 90, 100]
+        # 会话日志增量对账间隔（分钟）；0 = 关闭自动对账（仅命令/请求时对账）
+        reconcileMinutes: 10
+        # 每日账本保留天数（超出部分在下一次对账时裁剪）
+        keepDays: 400
+        # 每日格子图覆盖天数（默认 91 = 13 周）
+        gridDays: 91
+        # 模型单价（USD/百万 token），覆盖默认 DeepSeek 定价；
+        # 键为 "provider:model" 或仅模型名；未命中模型用兜底价
+        pricing: {}
+        # /usage export 输出目录；空 = 当前工作区 .dsh-reports
+        exportDir: ''

@@ -1,0 +1,17 @@
+{
+  "name": "dsh-plugin-usage-report",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "DeepSeek Harness 独立插件：用量报表（@dsh-plugin/usage-report）",
+  "packageManager": "pnpm@11.7.0",
+  "scripts": {
+    "build": "pnpm --filter @dsh-plugin/usage-report run build",
+    "watch": "pnpm --filter @dsh-plugin/usage-report run watch",
+    "typecheck": "pnpm --filter @dsh-plugin/usage-report run typecheck"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.0",
+    "typescript": "^5.9.0"
+  }
+}

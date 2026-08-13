@@ -1,0 +1,53 @@
+{
+  "name": "@dsh-plugin/usage-report",
+  "version": "0.1.0",
+  "description": "用量/成本报表：按日/月汇聚 token 与费用、月度报表、预算告警，Claude Code/Codex 式每日格子与趣味统计",
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "cordis.patch.yml"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-runtime"
+      ]
+    }
+  },
+  "scripts": {
+    "build": "node ../../scripts/build-plugin.mjs --only usage-report",
+    "watch": "node ../../scripts/build-plugin.mjs --only usage-report --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@deepseek-ai/cordis": "link:../../../deepseek-harness/vendor/cordis",
+    "@deepseek-ai/cordis-plugin-timer": "link:../../../deepseek-harness/vendor/timer",
+    "@deepseek-ai/dsh-commands": "link:../../../deepseek-harness/packages/interaction/commands",
+    "@deepseek-ai/dsh-host-webserver": "link:../../../deepseek-harness/packages/host/webserver",
+    "@deepseek-ai/dsh-session": "link:../../../deepseek-harness/packages/core/session",
+    "@deepseek-ai/dsh-session-persistence": "link:../../../deepseek-harness/packages/session/session-persistence",
+    "@deepseek-ai/dsh-storage-domain": "link:../../../deepseek-harness/packages/storage/storage-domain",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.3",
+    "@types/react": "18.3.31",
+    "@deepseek-ai/dsh-client-locale": "link:../../../deepseek-harness/packages/client/locale",
+    "@deepseek-ai/dsh-client-runtime": "link:../../../deepseek-harness/packages/client/runtime",
+    "@deepseek-ai/dsh-client-ui-settings": "link:../../../deepseek-harness/packages/client/ui-settings",
+    "@deepseek-ai/dsh-client-ui-slots": "link:../../../deepseek-harness/packages/client/ui-slots",
+    "react": "18.3.1"
+  }
+}
