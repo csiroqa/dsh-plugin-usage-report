@@ -1,20 +1,24 @@
-# 统一行尾：文本文件一律 LF（提交时归一化，检出时按平台）
-* text=auto
+# Normalize line endings: LF everywhere for text files
+* text=auto eol=lf
 
+# Explicit LF for source and docs
 *.ts text eol=lf
 *.tsx text eol=lf
 *.js text eol=lf
 *.mjs text eol=lf
 *.mts text eol=lf
 *.json text eol=lf
-*.md text eol=lf
 *.yml text eol=lf
 *.yaml text eol=lf
+*.md text eol=lf
+*.css text eol=lf
+*.ps1 text eol=lf
 
-# 二进制与生成物不参与归一化
+# Binary files
 *.png binary
 *.jpg binary
 *.jpeg binary
 *.gif binary
 *.ico binary
 *.map binary
+*.zip binary
