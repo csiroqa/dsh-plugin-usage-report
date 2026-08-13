@@ -54,7 +54,7 @@ dsh plugin --profile web add link:E:\path\to\dsh-plugin-usage-report\plugins\usa
 
 - 针对 DSH `0.1.0-rc.5` 源码检出开发验证
 - 客户端仅依赖平台模块表（react 等），不随 DSH SDK 版本漂移
-- 构建产物：`esbuild`（host 半区 `lib/index.js` + browser 半区 `lib/client.js`，标准 `window.__ModuleLoader__.load` 闭包工厂格式）
+- 构建产物：`tsdown`（host 半区 `lib/index.js` + browser 半区 `lib/client.js`，标准 `window.__ModuleLoader__.load` 闭包工厂格式）
 
 ## 安全说明
 

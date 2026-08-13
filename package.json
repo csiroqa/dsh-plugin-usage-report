@@ -30,9 +30,5 @@
     "build": "pnpm --filter @dsh-plugin/usage-report run build",
     "watch": "pnpm --filter @dsh-plugin/usage-report run watch",
     "typecheck": "pnpm --filter @dsh-plugin/usage-report run typecheck"
-  },
-  "devDependencies": {
-    "esbuild": "^0.28.0",
-    "typescript": "^5.9.0"
   }
 }

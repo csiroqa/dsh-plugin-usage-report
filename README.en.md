@@ -54,7 +54,7 @@ Restart `dsh web` and hard-refresh the browser (**Ctrl+F5**).
 
 - Developed against a DSH `0.1.0-rc.5` source checkout
 - The client half depends only on platform modules (react, etc.)
-- Build: `esbuild` (host `lib/index.js` + browser `lib/client.js`, standard `window.__ModuleLoader__.load` closure-factory format)
+- Build: `tsdown` (host `lib/index.js` + browser `lib/client.js`, standard `window.__ModuleLoader__.load` closure-factory format)
 
 ## Security notes
 

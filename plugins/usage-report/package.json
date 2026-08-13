@@ -25,9 +25,15 @@
   },
   "type": "module",
   "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "exports": {
-    ".": "./lib/index.js",
-    "./client": "./lib/client.js",
+    ".": {
+      "types": "./lib/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./client": {
+      "default": "./lib/client.js"
+    },
     "./package.json": "./package.json"
   },
   "files": [
@@ -48,9 +54,9 @@
     }
   },
   "scripts": {
-    "build": "node ../../scripts/build-plugin.mjs --only usage-report",
-    "watch": "node ../../scripts/build-plugin.mjs --only usage-report --watch",
-    "typecheck": "tsc --noEmit"
+    "build": "tsdown",
+    "typecheck": "tsc --noEmit",
+    "watch": "tsdown --watch"
   },
   "dependencies": {
     "@deepseek-ai/cordis": "link:../../../deepseek-harness/vendor/cordis",
@@ -69,6 +75,8 @@
     "@deepseek-ai/dsh-client-runtime": "link:../../../deepseek-harness/packages/client/runtime",
     "@deepseek-ai/dsh-client-ui-settings": "link:../../../deepseek-harness/packages/client/ui-settings",
     "@deepseek-ai/dsh-client-ui-slots": "link:../../../deepseek-harness/packages/client/ui-slots",
-    "react": "18.3.1"
+    "react": "18.3.1",
+    "tsdown": "^0.22.14",
+    "typescript": "^5.9.3"
   }
 }
