@@ -8,7 +8,7 @@ A **usage & cost report** plugin for DeepSeek Harness (DSH): aggregates tokens (
 
 - **Usage ledger**: refolds only revision-changed session logs against sessionPersistence, accumulating tokens / turns / steps / estimated cost (USD) per day, broken down by model (`provider:model` key); persisted via storage-domain, no full rescan after restart
 - **Budget alerts**: monthly budget (`monthlyBudgetUsd`) triggers alerts at threshold percentages (default 50/80/90/100%), deduplicated by `month|threshold`, reset automatically across months
-- **`/usage` command**: `/usage` (today/month/budget progress/contribution grid/fun stats), `/usage month [YYYY-MM]` (monthly detail), `/usage budget <usd>` (0 disables), `/usage export [dir]` (Markdown report), `/usage rescan` (full rescan)
+- **`/usage` command**: `/usage` (today/month/budget progress/daily contribution grid/fun stats), `/usage month [YYYY-MM]` (monthly detail), `/usage budget <usd>` (0 disables), `/usage export [dir]` (Markdown report), `/usage rescan` (full rescan), `/usage pricing` (effective-price audit: price source per seen model — config / built-in / fallback)
 - **"Usage" tab under Settings > Plugins**: Claude Code/Codex-style daily contribution grid (last 13 weeks), editable budget progress bar, fun stats cards and alert list (zh/en, auto-refreshes every 15 seconds)
 
 ## Configuration
@@ -48,7 +48,26 @@ Restart `dsh web` and hard-refresh the browser (**Ctrl+F5**).
 
 1. Run `/usage` in a session to see today / this month / budget progress / daily contribution grid / fun stats; `/usage month [YYYY-MM]` for monthly detail
 2. `/usage budget <usd>` sets the monthly budget; `/usage export [dir]` exports this month's report; `/usage rescan` does a full rescan
-3. Settings > Plugins > **Usage**: daily contribution grid, editable budget progress and alert list
+3. `/usage pricing` checks the effective price and source (config override / built-in official price / fallback) for every seen model
+4. Settings > Plugins > **Usage**: daily contribution grid, editable budget progress and alert list
+
+## Development
+
+```sh
+# Typecheck
+pnpm typecheck
+
+# Build (tsdown: host ESM + browser closure factory + d.ts)
+pnpm build
+
+# Plugin watch (rebuilds lib/ on src/ changes)
+pnpm watch
+
+# Smoke (loads the host bundle and validates the export shape)
+node scripts/smoke.mjs
+```
+
+CI (`.github/workflows/ci.yml`): three-OS matrix (ubuntu / windows / macos) — pins the harness commit (`env.DSH_HARNESS_REF`, matching the local dev checkout) → builds the full harness lib → install → typecheck → build → smoke. Versions are not hardcoded: pnpm comes from `packageManager`, Node from `devEngines.runtime`, both read by `pnpm/setup`.
 
 ## Compatibility
 

@@ -8,7 +8,7 @@ English: [README.en.md](README.en.md)
 
 - **用量账本**：对照 sessionPersistence 的 revision 增量重折叠变更会话日志，按日累计 token / 轮 / 步 / 估算费用（USD），按模型分账（`provider:model` 键）；数据持久化于 storage-domain，重启无需全量重扫
 - **预算告警**：月度预算（`monthlyBudgetUsd`）按阈值（默认 50/80/90/100%）触发告警，按「月份|阈值」去重、跨月自动重置
-- **命令 `/usage`**：`/usage`（今日/本月/预算进度/每日格子/趣味统计）、`/usage month [YYYY-MM]`（月度明细）、`/usage budget <usd>`（0 关闭）、`/usage export [dir]`（导出 Markdown 报表）、`/usage rescan`（全量重扫）
+- **命令 `/usage`**：`/usage`（今日/本月/预算进度/每日贡献格子/趣味统计）、`/usage month [YYYY-MM]`（月度明细）、`/usage budget <usd>`（0 关闭）、`/usage export [dir]`（导出 Markdown 报表）、`/usage rescan`（全量重扫）、`/usage pricing`（生效单价审计：每个已出现模型的价格来源 config / 内置 / 兜底）
 - **设置页「用量」页签**：Claude Code / Codex 式每日贡献格子（近 13 周）、预算进度条（可编辑）、趣味统计卡与告警列表（中英双语，每 15 秒自动刷新）
 
 ## 配置
@@ -48,7 +48,26 @@ dsh plugin --profile web add link:E:\path\to\dsh-plugin-usage-report\plugins\usa
 
 1. 会话里输入 `/usage` 查看今日/本月/预算进度/每日贡献格子/趣味统计；`/usage month [YYYY-MM]` 查看月度明细
 2. `/usage budget <usd>` 设置月度预算；`/usage export [dir]` 导出当月报表；`/usage rescan` 全量重扫
-3. 设置 > 插件 > **用量**：每日贡献格子、预算进度（可编辑）与告警列表
+3. `/usage pricing` 核对每个已出现模型的生效单价与来源（配置覆盖 / 内置官方价 / 兜底价）
+4. 设置 > 插件 > **用量**：每日贡献格子、预算进度（可编辑）与告警列表
+
+## 开发
+
+```sh
+# 类型检查
+pnpm typecheck
+
+# 构建（tsdown：host ESM + browser 闭包工厂 + d.ts）
+pnpm build
+
+# 单插件 watch（改 src/ 自动重编 lib/）
+pnpm watch
+
+# 冒烟（加载 host 产物，校验导出形态）
+node scripts/smoke.mjs
+```
+
+CI（`.github/workflows/ci.yml`）：三平台（ubuntu / windows / macos）矩阵，流程为锁定 harness 提交（`env.DSH_HARNESS_REF`，与本地开发检出一致）→ 构建 harness 完整 lib → 安装 → 类型检查 → 构建 → 冒烟。版本号不硬编码：pnpm 版本取自 `packageManager`、Node 版本取自 `devEngines.runtime`，均由 `pnpm/setup` 读取。
 
 ## 兼容性
 

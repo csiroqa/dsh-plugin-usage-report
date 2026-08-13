@@ -57,15 +57,29 @@ export function normalizeModelKey(provider: string | undefined, model: string | 
   return prov && prov !== 'unknown' ? `${prov}:${clean}` : clean
 }
 
-/** 依据配置覆盖、常见键与兜底解析单价。 */
-export function resolvePricing(modelKey: string, overrides: Record<string, ModelPricing>): ModelPricing {
-  if (overrides[modelKey]) return overrides[modelKey]
+/** 单价来源：config 覆盖 / 内置官方价 / 兜底价。 */
+export type PricingSource = 'config' | 'builtin' | 'fallback'
+
+/**
+ * 解析单价并说明来源（config → 内置 → 兜底）。
+ * 与 resolvePricing 共用同一逻辑，避免两处漂移。
+ */
+export function pricingSourceOf(
+  modelKey: string,
+  overrides: Record<string, ModelPricing>,
+): { price: ModelPricing; source: PricingSource } {
+  if (overrides[modelKey]) return { price: overrides[modelKey], source: 'config' }
   const colon = modelKey.lastIndexOf(':')
   const bare = colon >= 0 ? modelKey.slice(colon + 1) : modelKey
-  if (overrides[bare]) return overrides[bare]
-  if (DEEPSEEK_PRICING[bare]) return DEEPSEEK_PRICING[bare]
-  if (DEEPSEEK_PRICING[modelKey]) return DEEPSEEK_PRICING[modelKey]
-  return FALLBACK_PRICING
+  if (overrides[bare]) return { price: overrides[bare], source: 'config' }
+  if (DEEPSEEK_PRICING[bare]) return { price: DEEPSEEK_PRICING[bare], source: 'builtin' }
+  if (DEEPSEEK_PRICING[modelKey]) return { price: DEEPSEEK_PRICING[modelKey], source: 'builtin' }
+  return { price: FALLBACK_PRICING, source: 'fallback' }
+}
+
+/** 依据配置覆盖、常见键与兜底解析单价。 */
+export function resolvePricing(modelKey: string, overrides: Record<string, ModelPricing>): ModelPricing {
+  return pricingSourceOf(modelKey, overrides).price
 }
 
 /** 空 token 桶。 */

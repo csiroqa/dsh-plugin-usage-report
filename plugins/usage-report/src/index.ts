@@ -33,8 +33,9 @@ import { isAbsolute, join } from 'node:path'
 import {
   buildSummaryOf, budgetStatusOf, bucketPart, buildGridOf, cutoffDayOf, currentMonthKey,
   dayKeyOf, foldSession, formatTokens, formatUsd, funStatsOf, gridGlyph, isContributionActive,
-  monthKeyOf, monthTotalsOf, progressBar, recomputeDaysOf, resolvePricing, tokensTotal,
-  type BudgetStatus, type FunStats, type GridCell, type ModelPricing, type UsageSummary,
+  monthKeyOf, monthTotalsOf, pricingSourceOf, progressBar, recomputeDaysOf, tokensTotal,
+  type BudgetStatus, type FunStats, type GridCell, type ModelPricing, type PricingSource,
+  type UsageSummary,
 } from './ledger'
 import {
   usageDomainSpec,
@@ -154,7 +155,7 @@ class UsageLedger {
         continue
       }
       const byDay: SessionUsageRecord['byDay'] = {}
-      const fold = foldSession(events, key => resolvePricing(key, this.options.pricingOverrides))
+      const fold = foldSession(events, key => pricingSourceOf(key, this.options.pricingOverrides).price)
       for (const [day, contribution] of fold) {
         if (isContributionActive(contribution) && day >= cutoff) byDay[day] = contribution
       }
@@ -271,6 +272,35 @@ class UsageLedger {
   grid(count: number): GridCell[] {
     return buildGridOf(this.days, count, Date.now())
   }
+
+  /** 已出现模型的生效单价与来源（用于 /usage pricing 审计）。 */
+  pricingReport(): Array<{ modelKey: string; price: ModelPricing; source: PricingSource }> {
+    const keys = new Set<string>()
+    for (const record of this.sessions.values()) {
+      for (const contribution of Object.values(record.byDay)) {
+        for (const key of Object.keys(contribution.byModel)) keys.add(key)
+      }
+    }
+    return [...keys].sort().map(modelKey => {
+      const { price, source } = pricingSourceOf(modelKey, this.options.pricingOverrides)
+      return { modelKey, price, source }
+    })
+  }
+
+  /** 是否存在按兜底价估算的未知模型用量（用于输出警示）。 */
+  hasUnknownModelUsage(): boolean {
+    for (const record of this.sessions.values()) {
+      for (const contribution of Object.values(record.byDay)) {
+        if (contribution.byModel['unknown'] !== undefined) return true
+      }
+    }
+    return false
+  }
+}
+
+/** 单价展示（去尾零，如 0.27 / 1.1）。 */
+function formatPrice(usd: number): string {
+  return `$${usd.toFixed(4).replace(/\.?0+$/u, '')}`
 }
 
 /** 返回查询参数映射。 */
@@ -322,7 +352,7 @@ export function apply(ctx: Context, config: Config = {}): void {
     ctx.effect(() => ctx.commands.register({
       name: 'usage',
       description: '用量报表：今日与本月统计、预算进度、每日格子与趣味统计',
-      input: { hint: '[month [YYYY-MM] | budget <usd> | export [dir] | rescan]' },
+      input: { hint: '[month [YYYY-MM] | budget <usd> | export [dir] | rescan | pricing]' },
       handler: async (invocation) => {
         try {
           const tokens = invocation.rawInput.trim().split(/\s+/u).filter(Boolean)
@@ -380,6 +410,20 @@ export function apply(ctx: Context, config: Config = {}): void {
             await ledger.reconcile(true)
             return { kind: 'success', text: '已完成全量重扫' }
           }
+          if (sub === 'pricing') {
+            const rows = ledger.pricingReport()
+            if (rows.length === 0) return { kind: 'success', text: '📊 暂无已记录的模型用量' }
+            const lines = ['📊 生效单价（USD/百万 token）', '']
+            for (const { modelKey, price, source } of rows) {
+              lines.push(
+                `  ${modelKey}  ${source.padEnd(8)}`
+                + ` 入 ${formatPrice(price.input)} · 缓存读 ${formatPrice(price.cacheRead)}`
+                + ` · 缓存写 ${formatPrice(price.cacheWrite ?? price.cacheRead)} · 出 ${formatPrice(price.output)}`,
+              )
+            }
+            lines.push('', '来源：config = pricing 配置覆盖 · builtin = 内置官方价（2025-03）· fallback = deepseek-chat 兜底价')
+            return { kind: 'success', text: lines.join('\n') }
+          }
 
           const summary = await ledger.summary(0)
           const todayLevel = summary.grid.at(-1)?.level ?? 0
@@ -406,9 +450,10 @@ export function apply(ctx: Context, config: Config = {}): void {
             `🔥 连续 ${summary.stats.currentStreak} 天 · 🏆 最长 ${summary.stats.longestStreak} 天 · 📅 累计活跃 ${summary.stats.activeDays} 天`
               + (summary.stats.topDay ? ` · ⚡ 单日纪录 ${formatUsd(summary.stats.topDay.costUsd)}（${summary.stats.topDay.day}）` : ''),
             `今日：${TODAY_TITLES[todayLevel]}`,
+            ...(ledger.hasUnknownModelUsage() ? ['', '⚠ 存在未知模型用量，按兜底价估算（/usage pricing 查看生效单价）'] : []),
             ...(summary.alerts.length > 0 ? ['', `🚨 预算告警 ${summary.alerts.length} 条（近期，见设置 > 用量页签）`] : []),
             '',
-            '提示：/usage month [YYYY-MM] · /usage budget <usd> · /usage export · /usage rescan',
+            '提示：/usage month [YYYY-MM] · /usage budget <usd> · /usage export · /usage rescan · /usage pricing',
           ]
           return { kind: 'success', text: lines.join('\n') }
         } catch (error) {
