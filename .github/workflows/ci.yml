@@ -29,11 +29,13 @@ jobs:
       - name: Checkout deepseek-harness (sibling)
         run: git clone --depth 1 https://github.com/deepseek-ai/deepseek-harness ../deepseek-harness
 
-      - name: Build harness host half
+      # 构建完整 lib（host + client 两半区）：host 包类型供插件 host 半区 typecheck，
+      # client 包类型（dsh-client-*）供浏览器半区 typecheck —— lib/ 不入库，必须构建。
+      - name: Build harness lib
         working-directory: ../deepseek-harness
         run: |
           pnpm install
-          pnpm run build:lib:host
+          pnpm run build:lib
 
       - name: Install plugin dependencies
         run: pnpm install
