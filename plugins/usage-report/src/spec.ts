@@ -74,9 +74,9 @@ export const usageGlobalSchema = z.object({
 })
 export type UsageGlobal = z.infer<typeof usageGlobalSchema>
 
-/** 用量账本 domain 声明。 */
+/** 用量账本 domain 声明。域名须匹配 /^[a-z][a-z0-9_]*$/（storage-domain 约束，不允许连字符）。 */
 export const usageDomainSpec = defineDomain({
-  name: 'usage-report',
+  name: 'usage_report',
   version: 1,
   global: {
     schema: usageGlobalSchema,
