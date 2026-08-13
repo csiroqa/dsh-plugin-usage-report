@@ -25,6 +25,9 @@
   "engines": {
     "node": ">=22"
   },
+  "devEngines": {
+    "runtime": "node@22"
+  },
   "packageManager": "pnpm@11.7.0",
   "scripts": {
     "build": "pnpm --filter @dsh-plugin/usage-report run build",

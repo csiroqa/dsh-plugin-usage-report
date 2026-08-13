@@ -5,6 +5,13 @@ on:
     branches: [main]
   pull_request:
 
+# 不硬编码：版本号一律派生自 package.json——
+#   pnpm 版本 ← packageManager；Node 版本 ← devEngines.runtime（pnpm/setup 自动读取）。
+# 唯一例外：DSH_HARNESS_REF 锁定插件开发验证所针对的 harness 提交（可复现构建，
+# 避免 master 漂移破坏 CI；升级时改这一处即可）。
+env:
+  DSH_HARNESS_REF: 47f943859bef60e4160492346772ded9b24f765a
+
 jobs:
   build:
     strategy:
@@ -16,18 +23,17 @@ jobs:
       - uses: actions/checkout@v4
 
       # pnpm 11+ 使用 pnpm/setup（pnpm/action-setup 面向 v10 及更早）。
-      # 不传 version：以 package.json 的 packageManager（pnpm@11.7.0）为单一事实源，
-      # 避免双源冲突（ERR_PNPM_BAD_PM_VERSION）。
       # install: false：link: 依赖指向兄弟目录 harness，须先克隆再安装。
       - uses: pnpm/setup@v1
         with:
-          runtime: node@22
           cache: true
           install: false
 
       # 依赖以 link: 指向兄弟目录的 deepseek-harness 检出（与本地开发环境一致）。
-      - name: Checkout deepseek-harness (sibling)
-        run: git clone --depth 1 https://github.com/deepseek-ai/deepseek-harness ../deepseek-harness
+      - name: Checkout deepseek-harness (sibling, pinned ref)
+        run: |
+          git clone --filter=blob:none https://github.com/deepseek-ai/deepseek-harness ../deepseek-harness
+          git -C ../deepseek-harness checkout ${{ env.DSH_HARNESS_REF }}
 
       # 构建完整 lib（host + client 两半区）：host 包类型供插件 host 半区 typecheck，
       # client 包类型（dsh-client-*）供浏览器半区 typecheck —— lib/ 不入库，必须构建。
