@@ -15,13 +15,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # pnpm 11+ 使用 pnpm/setup（pnpm/action-setup 面向 v10 及更早，
-      # 与 packageManager 声明的 pnpm@11.7.0 存在版本冲突）；同时安装 Node 22。
+      # pnpm 11+ 使用 pnpm/setup（pnpm/action-setup 面向 v10 及更早）。
+      # 不传 version：以 package.json 的 packageManager（pnpm@11.7.0）为单一事实源，
+      # 避免双源冲突（ERR_PNPM_BAD_PM_VERSION）。
+      # install: false：link: 依赖指向兄弟目录 harness，须先克隆再安装。
       - uses: pnpm/setup@v1
         with:
-          version: 11
           runtime: node@22
           cache: true
+          install: false
 
       # 依赖以 link: 指向兄弟目录的 deepseek-harness 检出（与本地开发环境一致）。
       - name: Checkout deepseek-harness (sibling)
